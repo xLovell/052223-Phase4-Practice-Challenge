@@ -20,9 +20,12 @@ class Episode(db.Model, SerializerMixin):
     date = db.Column(db.String)
     number = db.Column(db.Integer)
 
-    # add relationship
+    appearances = db.relationship("Appearance", cascade="all, delete", backref="episode")
     
-    # add serialization rules
+    serialize_rules = ("-appearances.episode",)
+
+    def __repr__(self):
+        return f'<Episode number: {self.number}>'
     
 
 class Guest(db.Model, SerializerMixin):
@@ -32,9 +35,12 @@ class Guest(db.Model, SerializerMixin):
     name = db.Column(db.String)
     occupation = db.Column(db.String)
 
-    # add relationship
+    appearances = db.relationship("Appearance", cascade="all, delete", backref="guest")
     
-    # add serialization rules
+    serialize_rules = ("-appearances.guest",)
+
+    def __repr__(self):
+        return f'<Guest: {self.name}>'
     
 
 class Appearance(db.Model, SerializerMixin):
@@ -43,10 +49,18 @@ class Appearance(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer)
 
-    # add relationships
+    episode_id = db.Column(db.Integer, db.ForeignKey("episodes.id"))
+    guest_id = db.Column(db.Integer, db.ForeignKey("guests.id"))
     
-    # add serialization rules
+    serialize_rules = ("-episode.appearances", "-guest.appearances")
     
-    # add validation
+    @validates('rating')
+    def validate_rating(self, key, rating):
+        if not 1 <= rating <5:
+            raise ValueError('Invalid rating.')
+        return rating
+    
+    def __repr__(self):
+        return f'<Rating: {self.rating}>'
     
 # add any models you may need.
