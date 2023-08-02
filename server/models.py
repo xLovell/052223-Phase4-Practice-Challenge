@@ -24,8 +24,6 @@ class Episode(db.Model, SerializerMixin):
     
     serialize_rules = ("-appearances.episode",)
 
-    def __repr__(self):
-        return f'<Episode number: {self.number}>'
     
 
 class Guest(db.Model, SerializerMixin):
@@ -39,8 +37,6 @@ class Guest(db.Model, SerializerMixin):
     
     serialize_rules = ("-appearances.guest",)
 
-    def __repr__(self):
-        return f'<Guest: {self.name}>'
     
 
 class Appearance(db.Model, SerializerMixin):
@@ -56,11 +52,6 @@ class Appearance(db.Model, SerializerMixin):
     
     @validates('rating')
     def validate_rating(self, key, rating):
-        if not 1 <= rating <5:
+        if not 1 <= rating <= 5:
             raise ValueError('Invalid rating.')
         return rating
-    
-    def __repr__(self):
-        return f'<Rating: {self.rating}>'
-    
-# add any models you may need.
